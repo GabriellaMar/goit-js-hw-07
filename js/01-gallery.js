@@ -1,5 +1,4 @@
 import { galleryItems } from './gallery-items.js';
-// Change code below this line
 
 const galleryList = document.querySelector('.gallery')
 
@@ -21,37 +20,48 @@ const galeryMarkup = createGalleryItem(galleryItems)
 
 galleryList.insertAdjacentHTML('beforeend', galeryMarkup)
 
-galleryList.addEventListener('click', onGaleryItemsClick);
+galleryList.addEventListener('click', onGaleryImageClick);
 
-let openImg;
+let instance;
 
-function onGaleryItemsClick(e) {
+function onGaleryImageClick(e) {
     const { target } = e;
 
-    if (!target.dataset.source) {
+    e.preventDefault()
+
+    if (target.nodeName !== 'IMG') {
         return
     }
-    e.preventDefault()
-    const image = e.target;
-    const imgSource = image.dataset.source;
+    const imgSource = target.dataset.source;
 
-    if (openImg) {
-        openImg.close()
+    instance = basicLightbox.create(`
+    <img src="${imgSource}">
+  `, {
+        onShow: (instance) => {
+            instance.element().querySelector('img').addEventListener('click', onCloseModal);
+            document.addEventListener('keydown', closeImgOnKeyPress);
+        },
+
+        onClose: (instance) => {
+            instance.element().querySelector('img').removeEventListener('click', onCloseModal);
+            document.removeEventListener('keydown', closeImgOnKeyPress);
+        }
+    });
+
+    instance.show()
+
+    function onCloseModal() {
+        instance.close();
     }
-    openImg = basicLightbox.create(`
-    <img src="${imgSource}">`)
-    openImg.show()
-
 }
 
 
-window.addEventListener('keydown', closeImgOnESC);
-
-function closeImgOnESC(e) {
-
-    if (e.code === 'Escape') {
-        openImg.close();
+function closeImgOnKeyPress(e) {
+    if (e.code !== 'Escape') {
+        return;
     }
+    instance.close();
 }
+
 
 
