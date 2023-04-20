@@ -22,10 +22,6 @@ galleryList.addEventListener('click', onGaleryItemsClick);
 
 
 function onGaleryItemsClick(e) {
-    // const { target } = e;
-    // if (target.className !== "gallery__link") {
-    //     return
-    // }
     e.preventDefault()
 }
 
